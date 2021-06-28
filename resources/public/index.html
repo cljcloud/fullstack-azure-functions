@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" data-color-mode="light" data-dark-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+    <style type="text/css">
+        body [role=button]:focus,
+        body [role=tabpanel][tabindex="0"]:focus,
+        body a:focus,
+        body button:focus,
+        body summary:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .pagehead-actions>li {
+            float: left;
+            margin: 0 10px 0 0;
+            font-size: 11px;
+            color: var(--color-text-primary);
+            list-style-type: none;
+        }
+    </style>
+    <title>CljCloud - Fullstack Azure Functions</title>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script src="/js/app.js"></script>
+    <script>fullstack_azure_functions.core.init();</script>
+</body>
+</html>
