@@ -1,4 +1,4 @@
-(ns fullstack-azure-functions.shadow-cljs.azure-app
+(ns fullstack-azure-functions.cljcloud.shadow-cljs
   (:require [clojure.java.io :as io]
             [jsonista.core :as j]
             [environ.core :refer [env]]))
@@ -38,3 +38,21 @@
       (spit (str app-dir "/host.json") (j/write-value-as-string merged-host))
       (spit (str app-dir "/local.settings.json") (j/write-value-as-string merged-settings))))
   build-state)
+
+;(defmacro def-azure-fun
+;
+;  )
+
+
+(comment
+
+  (def-azure-fun
+    {:trigger :http
+     :methods :get
+     :route   "{*path}"
+     }
+    [req ctx]
+
+                 )
+
+  )

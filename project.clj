@@ -25,9 +25,12 @@
                                    :asset-path "/js"
                                    :modules    {:app {:entries [fullstack-azure-functions.core]}}}
                            :azure {:target      :azure-app
-                                   :fn-map      {:foo fullstack-azure-functions.api.foo/run}
+                                   ;; the order of fn definition is always abc
+                                   ;; important to have wildcard routes defined last
+                                   :fn-map      {:users    fullstack-azure-functions.api.users/run
+                                                 :z-render fullstack-azure-functions.api.render/run}
                                    :app-dir     "target/azure"
-                                   :build-hooks [(fullstack-azure-functions.shadow-cljs.azure-app/inject-settings
+                                   :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/inject-settings
                                                    {:host     {:test    "test 123"
                                                                :number  42
                                                                :enabled true}
