@@ -6,9 +6,13 @@
                  [metosin/jsonista "0.3.3"]
                  [environ "1.2.0"]
                  [cljs-ajax "0.8.1"]
+                 [com.cognitect/transit-cljs "0.8.269"]
+                 [reagent "1.0.0"]
+
+                 ;; installed locally
                  [com.google.javascript/closure-compiler-unshaded "v20200504" :scope "provided"]
                  [thheller/shadow-cljs "2.11.7" :scope "provided"]
-                 [reagent "1.0.0"]]
+                 ]
   :plugins [[lein-shadow "0.4.0"]
             [lein-environ "1.2.0"]]
   :main ^:skip-aot fullstack-azure-functions.core

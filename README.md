@@ -17,7 +17,7 @@ Dev server is automaticallu started on 8020 port.
 
 Start Azure Func (starts node process, required for REPL):
 
-    $ cd target/api && func start
+    $ cd target/azure && func start
 
 ## Release
 
