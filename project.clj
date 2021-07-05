@@ -27,8 +27,8 @@
                            :azure {:target      :azure-app
                                    ;; the order of fn definition is always abc
                                    ;; important to have wildcard routes defined last
-                                   :fn-map      {:users    fullstack-azure-functions.api.users/run
-                                                 :z-render fullstack-azure-functions.api.render/run}
+                                   :fn-map      {:users fullstack-azure-functions.server.azure-fns/users
+                                                 :z-ssr fullstack-azure-functions.server.azure-fns/ssr}
                                    :app-dir     "target/azure"
                                    :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/render-settings)]
                                    :js-options  {:js-provider          :shadow
@@ -42,6 +42,8 @@
                  [source-map-support "0.5.19"]]
 
   :profiles {:prod {:env {:database-url "production-db"
-                          :proxy-assets "storage-url"}}
+                          :proxy-assets "storage-url"
+                          :proxy-favicon "storage-url"}}
              :dev  {:env {:database-url "jdbc:postgresql://localhost/dev"
-                          :proxy-assets "http://localhost:8020/assets/{path}" }}})
+                          :proxy-assets "http://localhost:8020/assets/{path}"
+                          :proxy-favicon "http://localhost:8020/favicon.ico"}}})

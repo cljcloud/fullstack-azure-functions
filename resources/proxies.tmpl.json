@@ -10,6 +10,16 @@
         "route": "assets/{*path}"
       },
       "backendUri": "{proxy-assets}"
+    },
+    "favicon": {
+      "debug": true,
+      "matchCondition": {
+        "methods": [
+          "GET"
+        ],
+        "route": "favicon.ico"
+      },
+      "backendUri": "{proxy-favicon}"
     }
   }
 }

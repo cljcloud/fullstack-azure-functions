@@ -1,4 +1,4 @@
-(ns fullstack-azure-functions.pages
+(ns fullstack-azure-functions.components
   (:require [ajax.core :refer [GET POST]]
             [reagent.core :as r]
             [reagent.dom :as rdom]))

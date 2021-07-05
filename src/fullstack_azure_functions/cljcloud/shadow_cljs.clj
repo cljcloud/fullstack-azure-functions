@@ -57,21 +57,3 @@
            j/write-value-as-string
            (spit (str app-dir "/proxies.json")))))
   build-state)
-
-;(defmacro def-azure-fun
-;
-;  )
-
-
-(comment
-
-  (def-azure-fun
-    {:trigger :http
-     :methods :get
-     :route   "{*path}"
-     }
-    [req ctx]
-
-    )
-
-  )

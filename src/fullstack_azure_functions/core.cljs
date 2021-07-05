@@ -3,14 +3,13 @@
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [react-dom :as react-dom]
-            [fullstack-azure-functions.pages :as p])
-  )
+            [fullstack-azure-functions.components :as c]))
 
 ;; start is called by init and after code reloading finishes
 (defn ^:dev/after-load start []
   ;(routes/init!)
   (js/console.log "on start")
-  (rdom/render [p/app] (.getElementById js/document "app")))
+  (rdom/render [c/app] (.getElementById js/document "app")))
 
 
 (defn ^:export hydrate [state]
@@ -23,10 +22,10 @@
   ;;   "background: #42cf00; color: #c2ff00;")
 
   ;; hydrate state
-  (reset! p/app-state (js->clj state :keywordize-keys true))
+  (reset! c/app-state (js->clj state :keywordize-keys true))
 
   ;; hydrate on init to avoid re-render
-  (react-dom/hydrate (r/as-element [p/app]) (.getElementById js/document "app")))
+  (react-dom/hydrate (r/as-element [c/app]) (.getElementById js/document "app")))
 
 ;; this is called before any code is reloaded
 (defn ^:dev/before-load stop []
@@ -34,7 +33,16 @@
 
 
 (comment
+  ;; run client REPL, open browser to start runtime
   (shadow.cljs.devtools.api/repl :app)
   (enable-console-print!)
+
+  ;; run server REPL, run func start to start nodejs process runtime
+  (shadow.cljs.devtools.api/repl :azure)
+  (cljs.nodejs/enable-util-print!)
+  (fs/readFileSync "host.json" "utf8")
+  (env :functions-worker-runtime)
+  (env :azure-web-jobs-storage)
+  (env :database-url)
   )
 
