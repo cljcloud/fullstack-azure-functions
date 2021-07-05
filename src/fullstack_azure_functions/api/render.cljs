@@ -4,7 +4,7 @@
             [environ.core :refer [env]]
             [cognitect.transit :as t]
             [reagent.dom.server :as r]
-    ;["md5" :as md5]
+            [fullstack-azure-functions.pages :as p]
             )
   )
 
@@ -21,7 +21,7 @@
 
 
 
-(defn template [{:keys [local?]}]
+(defn template [{:keys [local?]} page]
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}
    [:head
     [:meta {:charset "UTF-8"}]
@@ -44,7 +44,9 @@
         }"]
     [:title "CljCloud - Fullstack Azure Functions"]]
    [:body
-    [:div#app]
+    [:div#app
+     [page]]
+    ;; TODO: Use azure proxies for assets
     [:script {:src (if local?
                      "http://localhost:8020/js/app.js"
                      "/js/app.js"
@@ -54,7 +56,7 @@
 
 (defn render-page []
   {:status  200
-   :body    (r/render-to-static-markup [template {:local? true}])
+   :body    (r/render-to-string [template {:local? true} p/app])
    :headers {
              "Content-Type"                "text/html"
              ;"Cache-Control" "public,max-age=31536000"
@@ -83,18 +85,12 @@
                      :direction "out"
                      :name      "res"}]}
   [^js context ^js req]
-  (.log context "Cljs Azure Function Run")
-  (let [name   (or (.. req -query -name)
-                   (and (.. req -body) (.. req -body -name)))
-        result (render-page)
-
-        ]
+  (.log context "Cljs Azure Function Run" req)
+  (let [result (render-page)]
     ;;set response context.res = {...}
     (set! (. context -res) (clj->js result))
     ;; signal that async func finished
-    (. context done))
-
-  )
+    (. context done)))
 
 (comment
   (shadow.cljs.devtools.api/repl :azure)

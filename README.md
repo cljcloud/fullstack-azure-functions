@@ -23,7 +23,15 @@ Start Azure Func (starts node process, required for REPL):
 
     $ lein with-profile prod shadow release azure app
 
-## Usage
+## Azure Functions Bits
+
+Using proxies to re-route static files to CDN storage.
+
+   1. Allow wildcard route proxy - `"AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES": "true"`
+
+   2. Allow proxy to localhost - `"AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL": "true"`
+      
+      *Note: This setting disable referencing to local functions.*
 
 FIXME: explanation
 
