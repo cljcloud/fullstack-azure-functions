@@ -15,14 +15,14 @@
                  ]
   :plugins [[lein-shadow "0.4.0"]
             [lein-environ "1.2.0"]]
-  :main ^:skip-aot fullstack-azure-functions.core
+  ;:main ^:skip-aot fullstack-azure-functions.core
   :target-path "target/%s"
   :shadow-cljs {:nrepl    {:port 7002}
                 ;; dev server, serves static files
                 :dev-http {8020 ["resources/public" "target/app"]}
                 :builds   {:app   {:target     :browser
-                                   :output-dir "target/app/js"
-                                   :asset-path "/js"
+                                   :output-dir "target/app/assets/js"
+                                   :asset-path "/assets/js"
                                    :modules    {:app {:entries [fullstack-azure-functions.core]}}}
                            :azure {:target      :azure-app
                                    ;; the order of fn definition is always abc
@@ -30,11 +30,7 @@
                                    :fn-map      {:users    fullstack-azure-functions.api.users/run
                                                  :z-render fullstack-azure-functions.api.render/run}
                                    :app-dir     "target/azure"
-                                   :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/inject-settings
-                                                   {:host     {:test    "test 123"
-                                                               :number  42
-                                                               :enabled true}
-                                                    :settings {:env [:database-url]}})]
+                                   :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/render-settings)]
                                    :js-options  {:js-provider          :shadow
                                                  :keep-native-requires true}}
                            :test  {:target    :node-test
@@ -45,5 +41,7 @@
                  [ws "7.5.0"]
                  [source-map-support "0.5.19"]]
 
-  :profiles {:prod {:env {:database-url "production-db"}}
-             :dev  {:env {:database-url "jdbc:postgresql://localhost/dev"}}})
+  :profiles {:prod {:env {:database-url "production-db"
+                          :proxy-assets "storage-url"}}
+             :dev  {:env {:database-url "jdbc:postgresql://localhost/dev"
+                          :proxy-assets "http://localhost:8020/assets/{path}" }}})

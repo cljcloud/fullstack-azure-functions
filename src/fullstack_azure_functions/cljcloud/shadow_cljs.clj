@@ -1,42 +1,61 @@
 (ns fullstack-azure-functions.cljcloud.shadow-cljs
   (:require [clojure.java.io :as io]
             [jsonista.core :as j]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.string :as s]))
 
+(defn- render-template [template]
+  (->> template
+       (reduce-kv
+         (fn [m k v]
+           (if (map? v)
+             (assoc m k (render-template v))
+             (if (and (string? v)
+                      (s/starts-with? v "{")
+                      (s/ends-with? v "}"))
+               (let [val (subs v 1 (dec (.length v)))]
+                 (assoc m k (env (keyword val))))
+               (assoc m k v))))
+         {})))
 
-;; Pipe input stream to output stream, uses buffer
-;; do not save entire bytes to memory
-(defn copy-uri [uri file]
-  (with-open [in  (io/input-stream uri)
-              out (io/output-stream file)]
-    (io/copy in out)))
+(defn render-settings
+  "Renders Azure Function settings files:
+    host.json, local.settings.json, proxies.json
 
-(defn copy-file [src dest]
-  (io/copy (io/file src) (io/file dest)))
+  Replaces template values with environment values.
+    e.g. MY_KEY: '{MY_KEY_VALUE}' -> MY_KEY: 'MY_KEY_ENV_VALUE'
 
-(defn inject-settings
+  Saves files to :app-dir configured in shadow-cljs.edn"
   {:shadow.build/stage :configure}
   [build-state & args]
-  (let [target   (:shadow.build/config build-state)
-        app-dir  (:app-dir target)
-        config   (first args)
-        host     (:host config)
-        settings (:settings config)]
-    (let [default-host      (-> "resources/host.json"
-                                slurp
-                                (j/read-value j/keyword-keys-object-mapper))
-          merged-host       (merge default-host host)
-          default-settings  (-> "resources/local.settings.json"
-                                slurp
-                                (j/read-value j/keyword-keys-object-mapper))
-          env-settings-keys (:env settings)
-          merged-settings   (->> env-settings-keys
-                                 (reduce (fn [settings key]
-                                           (assoc-in settings [:Values key] (env key)))
-                                         default-settings))]
+  (let [target  (:shadow.build/config build-state)
+        app-dir (:app-dir target)]
+    (let [host     (-> "resources/host.tmpl.json"
+                       slurp
+                       (j/read-value j/keyword-keys-object-mapper))
+          settings (-> "resources/local.settings.tmpl.json"
+                       slurp
+                       (j/read-value j/keyword-keys-object-mapper))
+          proxies  (-> "resources/proxies.tmpl.json"
+                       slurp
+                       (j/read-value j/keyword-keys-object-mapper))]
+      ;; create app-dir
       (.mkdir (io/file app-dir))
-      (spit (str app-dir "/host.json") (j/write-value-as-string merged-host))
-      (spit (str app-dir "/local.settings.json") (j/write-value-as-string merged-settings))))
+      ;; write settings files
+      (->> host
+           render-template
+           j/write-value-as-string
+           (spit (str app-dir "/host.json")))
+
+      (->> settings
+           render-template
+           j/write-value-as-string
+           (spit (str app-dir "/local.settings.json")))
+
+      (->> proxies
+           render-template
+           j/write-value-as-string
+           (spit (str app-dir "/proxies.json")))))
   build-state)
 
 ;(defmacro def-azure-fun
@@ -53,6 +72,6 @@
      }
     [req ctx]
 
-                 )
+    )
 
   )

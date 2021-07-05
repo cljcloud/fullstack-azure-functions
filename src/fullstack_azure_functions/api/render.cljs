@@ -21,7 +21,8 @@
 
 
 
-(defn template [{:keys [local?]} page]
+
+(defn template [app]
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}
    [:head
     [:meta {:charset "UTF-8"}]
@@ -45,25 +46,24 @@
     [:title "CljCloud - Fullstack Azure Functions"]]
    [:body
     [:div#app
-     [page]]
-    ;; TODO: Use azure proxies for assets
-    [:script {:src (if local?
-                     "http://localhost:8020/js/app.js"
-                     "/js/app.js"
-                     )}]
-    [:script "fullstack_azure_functions.core.init();"]]]
-  )
+     [app]]
+    [:script {:src "/assets/js/app.js"}]
+    [:script {:dangerouslySetInnerHTML
+              {:__html (str "fullstack_azure_functions.core.hydrate("
+                            (->> @p/app-state
+                                 clj->js
+                                 (.stringify js/JSON))
+                            ");"
+                            )}}]
+    ]])
 
 (defn render-page []
+  (reset! p/app-state {:id  1,
+                       :bar true})
   {:status  200
-   :body    (r/render-to-string [template {:local? true} p/app])
-   :headers {
-             "Content-Type"                "text/html"
-             ;"Cache-Control" "public,max-age=31536000"
-             "Access-Control-Allow-Origin" "*"
-             }
-   }
-  )
+   :body    (r/render-to-string [template p/app])
+   :headers {"Content-Type"                "text/html; charset=utf-8"
+             "Access-Control-Allow-Origin" "*"}})
 
 ;; TODO: Auto generate swagger json and UI
 ;; TODO: Server-side rendering Azure Function

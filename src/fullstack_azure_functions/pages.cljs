@@ -15,9 +15,7 @@
                          (let [details (:details res)]
                            (prn "details" details)
                            (reset! app-state res)
-                           )
-                         )})
-  )
+                           ))}))
 
 (defn header-nav []
   [:div.Header.px-6.color-bg-secondary
@@ -29,6 +27,7 @@
     [:a.Header-link.color-text-primary {:href "#"} "APIs"]]])
 
 (defn app []
+  (prn "render app")
   [:<>
    [header-nav]
    [:div.container-md.clearfix.anim-scale-in
