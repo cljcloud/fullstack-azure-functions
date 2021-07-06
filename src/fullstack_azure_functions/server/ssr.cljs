@@ -1,8 +1,11 @@
 (ns fullstack-azure-functions.server.ssr
-  (:require [reagent.dom.server :as r]
-            [fullstack-azure-functions.components :as c]))
+  (:require [reagent.dom.server :as rds]
+            [reitit.frontend :as rf]
+            [fullstack-azure-functions.components :as c]
+            [fullstack-azure-functions.state :as s]
+            [fullstack-azure-functions.routes :refer [init-router]]))
 
-(defn template [app]
+(defn template [app state]
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}
    [:head
     [:meta {:charset "UTF-8"}]
@@ -30,7 +33,7 @@
     [:script {:src "/assets/js/app.js"}]
     [:script {:dangerouslySetInnerHTML
               {:__html (str "fullstack_azure_functions.core.hydrate("
-                            (->> @c/app-state
+                            (->> state
                                  clj->js
                                  (.stringify js/JSON))
                             ");"
@@ -47,10 +50,14 @@
 ;; Each route should have a multi fn with :server and :client
 ;; to get the required data from db or from API
 
-(defn render-app->html []
-  (reset! c/app-state {:id  1,
-                       :bar true})
-  (r/render-to-string [template c/app]))
+(defn render-app->html [req]
+  (init-router)
+  (let [route (rf/match-by-path @s/router (:url req))]
+    (reset! s/app-state {:route route
+                         :id    1
+                         :bar   true})
+    (let [dehydrated-state (s/dehydrate)]
+      (rds/render-to-string [template c/app dehydrated-state]))))
 
 
 ;; TODO: Auto generate swagger json and UI

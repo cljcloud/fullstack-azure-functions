@@ -1,34 +1,41 @@
 (ns fullstack-azure-functions.core
-  (:require [ajax.core :refer [GET POST]]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [reagent.dom :as rdom]
             [react-dom :as react-dom]
-            [fullstack-azure-functions.components :as c]))
+            [fullstack-azure-functions.components :as c]
+            [fullstack-azure-functions.state :as s]
+            [fullstack-azure-functions.routes :as routes]))
 
-;; start is called by init and after code reloading finishes
-(defn ^:dev/after-load start []
-  ;(routes/init!)
-  (js/console.log "on start")
-  (rdom/render [c/app] (.getElementById js/document "app")))
+(defn ^:dev/after-load start
+  "Start is called by init and after code reloading finishes"
+  []
+  (prn [:start])
+  (routes/init)
+  (rdom/render
+    [c/app]
+    (.getElementById js/document "app")))
 
-(defn ^:export hydrate [state]
-  (js/console.log "on hydrate" state)
-  ;; hydrate is called ONCE when the page loads
-  ;; this is called in the SSR html output and must be exported
-  ;; so it is available even in :advanced release builds
-  ;; (js/console.log
-  ;;   (str "%c" cybertron-ascii-art)
-  ;;   "background: #42cf00; color: #c2ff00;")
+(defn ^:export hydrate
+  "Hydrate is called only once on page re-load.
+  Called from the ssr template script and must be exported,
+  to preserve it's name even in :advanced release builds."
+  [^js/Object state]
+  (prn [:hydrate state])
 
   ;; hydrate state
-  (reset! c/app-state (js->clj state :keywordize-keys true))
+  (s/hydrate state)
+  ;; will update state with current route, required for further hydration
+  (routes/init)
+  ;; state must be same as used on server upon render, otherwise throws a warning
+  ;; will trigger app render, supposedly to attach react handlers
+  (react-dom/hydrate
+    (r/as-element [c/app])
+    (.getElementById js/document "app")))
 
-  ;; hydrate on init to avoid re-render
-  (react-dom/hydrate (r/as-element [c/app]) (.getElementById js/document "app")))
-
-;; this is called before any code is reloaded
-(defn ^:dev/before-load stop []
-  (js/console.log "on stop"))
+(defn ^:dev/before-load stop
+  "Stop called before any code is reloaded"
+  []
+  (prn [:stop]))
 
 
 (comment

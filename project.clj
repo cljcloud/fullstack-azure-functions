@@ -8,6 +8,7 @@
                  [cljs-ajax "0.8.1"]
                  [com.cognitect/transit-cljs "0.8.269"]
                  [reagent "1.0.0"]
+                 [metosin/reitit "0.5.13"]
 
                  ;; installed locally
                  [com.google.javascript/closure-compiler-unshaded "v20200504" :scope "provided"]

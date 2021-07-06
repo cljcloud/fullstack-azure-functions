@@ -45,7 +45,8 @@
         :route "{*path}"
         :handler (fn [ctx req res]
                    (prn [:ssr-invoked req])
-                   (->> (render-app->html)
+                   (->> req
+                        render-app->html
                         html-ok
                         res)))
 
