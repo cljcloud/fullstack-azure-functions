@@ -23,7 +23,7 @@
     host.json, local.settings.json, proxies.json
 
   Replaces template values with environment values.
-    e.g. MY_KEY: '{MY_KEY_VALUE}' -> MY_KEY: 'MY_KEY_ENV_VALUE'
+    e.g. MY_KEY: '{my-key-value}' -> MY_KEY: 'value from (:my-key-value env)'
 
   Saves files to :app-dir configured in shadow-cljs.edn"
   {:shadow.build/stage :configure}

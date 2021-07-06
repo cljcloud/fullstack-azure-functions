@@ -56,7 +56,8 @@
 ;; TODO: Auto generate swagger json and UI
 ;; TODO: Server-side rendering Azure Function
 ;; TODO: Clojars Library - Easily create fullstack azure functions with ClojureScript
-;; [cljcloud/azure-functions-cljs "0.0.1"]
+;; [com.cljcloud/cljs-azure "0.0.1"]
+;; (:require [cljs-azure.function :as az])
 
 
 

@@ -11,7 +11,6 @@
   (js/console.log "on start")
   (rdom/render [c/app] (.getElementById js/document "app")))
 
-
 (defn ^:export hydrate [state]
   (js/console.log "on hydrate" state)
   ;; hydrate is called ONCE when the page loads
@@ -36,13 +35,5 @@
   ;; run client REPL, open browser to start runtime
   (shadow.cljs.devtools.api/repl :app)
   (enable-console-print!)
-
-  ;; run server REPL, run func start to start nodejs process runtime
-  (shadow.cljs.devtools.api/repl :azure)
-  (cljs.nodejs/enable-util-print!)
-  (fs/readFileSync "host.json" "utf8")
-  (env :functions-worker-runtime)
-  (env :azure-web-jobs-storage)
-  (env :database-url)
   )
 

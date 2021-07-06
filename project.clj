@@ -28,6 +28,7 @@
                                    ;; the order of fn definition is always abc
                                    ;; important to have wildcard routes defined last
                                    :fn-map      {:users fullstack-azure-functions.server.azure-fns/users
+                                                 :roles fullstack-azure-functions.server.azure-fns/roles
                                                  :z-ssr fullstack-azure-functions.server.azure-fns/ssr}
                                    :app-dir     "target/azure"
                                    :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/render-settings)]
