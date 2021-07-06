@@ -3,8 +3,7 @@
             [cljs.nodejs :as nodejs]
             [cognitect.transit :as t]
             [fullstack-azure-functions.server.ssr :refer [render-app->html]]
-            [fullstack-azure-functions.cljcloud.azure :refer-macros [defapi]])
-  )
+            [fullstack-azure-functions.cljcloud.cljs-azure :refer-macros [defapi]]))
 
 
 ;; Respond with Transit JSON - consume as CLJ data struct
@@ -54,12 +53,14 @@
 (defapi roles
         :route "api/roles"
         :handler (fn [ctx req res]
-                   (cljs.pprint/pprint [:roles-invoked :ctx ctx :req req])
-                   (prn "test")
-                   (prn (-> ctx
-                            :bindings
-                            :req
-                            :headers))
+                   (prn [:roles-invoked req])
+                   ;; ctx and req are usual clojure maps
+                   ;(cljs.pprint/pprint [:roles-invoked :ctx ctx :req req])
+                   ;(prn "test")
+                   ;(prn (-> ctx
+                   ;         :bindings
+                   ;         :req
+                   ;         :headers))
                    (->> [{:id 1 :name "user"}
                          {:id 2 :name "admin"}]
                         clj->json

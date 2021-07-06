@@ -31,7 +31,7 @@
                                                  :roles fullstack-azure-functions.server.azure-fns/roles
                                                  :z-ssr fullstack-azure-functions.server.azure-fns/ssr}
                                    :app-dir     "target/azure"
-                                   :build-hooks [(fullstack-azure-functions.cljcloud.shadow-cljs/render-settings)]
+                                   :build-hooks [(fullstack-azure-functions.cljcloud.cljs-azure/render-settings)]
                                    :js-options  {:js-provider          :shadow
                                                  :keep-native-requires true}}
                            :test  {:target    :node-test
