@@ -3,19 +3,28 @@
   :url "https://github.com/cljcloud/fullstack-azure-functions"
   :dependencies [[org.clojure/clojure "1.10.2"]
                  [org.clojure/core.async "1.3.610"]
+                 ;; json
                  [metosin/jsonista "0.3.3"]
+                 ;; env
                  [environ "1.2.0"]
+                 ;; cljs
                  [cljs-ajax "0.8.1"]
                  [com.cognitect/transit-cljs "0.8.269"]
                  [reagent "1.0.0"]
+                 ;; routing
                  [metosin/reitit "0.5.13"]
+                 ;; db migrations
+                 [migratus "1.3.5"]
+                 [com.microsoft.sqlserver/mssql-jdbc "9.2.1.jre8"]
+
 
                  ;; installed locally
                  [com.google.javascript/closure-compiler-unshaded "v20200504" :scope "provided"]
                  [thheller/shadow-cljs "2.11.7" :scope "provided"]
                  ]
   :plugins [[lein-shadow "0.4.0"]
-            [lein-environ "1.2.0"]]
+            [lein-environ "1.2.0"]
+            [migratus-lein "0.7.3"]]
   ;:main ^:skip-aot fullstack-azure-functions.core
   :target-path "target/%s"
   :shadow-cljs {:nrepl    {:port 7002}
@@ -43,9 +52,13 @@
                  [ws "7.5.0"]
                  [source-map-support "0.5.19"]]
 
-  :profiles {:prod {:env {:database-url "production-db"
-                          :proxy-assets "storage-url"
+  :migratus {:store         :database
+             :migration-dir "migrations"
+             :db            ~(get (System/getenv) "database-url")}
+
+  :profiles {:prod {:env {:database-url  "production-db"
+                          :proxy-assets  "storage-url"
                           :proxy-favicon "storage-url"}}
-             :dev  {:env {:database-url "jdbc:postgresql://localhost/dev"
-                          :proxy-assets "http://localhost:8020/assets/{path}"
+             :dev  {:env {:database-url  "local-db-url"
+                          :proxy-assets  "http://localhost:8020/assets/{path}"
                           :proxy-favicon "http://localhost:8020/favicon.ico"}}})

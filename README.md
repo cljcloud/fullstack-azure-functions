@@ -33,9 +33,26 @@ Using proxies to re-route static files to CDN storage.
       
       *Note: This setting disable referencing to local functions.*
 
-FIXME: explanation
+## Migrations
 
-    $ java -jar fullstack-azure-functions-0.1.0-standalone.jar [args]
+DB migration scripts inside `resources/migrations` folder.
+
+Connection details should specified in local `profiles.clj` file.
+
+To update your current DB to the latest migration run:
+
+      $ lein migratus migrate  
+
+To rollback the last migration:
+
+      $ lein migratus rollback
+
+To create a new migration:
+
+      $ lein migratus create add-users-data
+
+
+    
 
 ## Options
 
