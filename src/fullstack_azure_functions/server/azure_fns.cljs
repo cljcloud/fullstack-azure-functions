@@ -2,6 +2,9 @@
   (:require [environ.core :refer [env]]
             [cljs.nodejs :as nodejs]
             [cognitect.transit :as t]
+            [cljs.core.async :refer-macros [go]]
+            [cljs.core.async.interop :refer-macros [<p!]]
+            [fullstack-azure-functions.server.db :as db]
             [fullstack-azure-functions.server.ssr :refer [render-app->html]]
             [fullstack-azure-functions.cljcloud.cljs-azure :refer-macros [defapi]]))
 
@@ -16,6 +19,12 @@
 
 (defn clj->json [data]
   (t/write transit-writer data))
+
+(defn json-err [json]
+  {:status  500
+   :body    json
+   :headers {"Content-Type"                "application/transit+json"
+             "Access-Control-Allow-Origin" "*"}})
 
 (defn json-ok [json]
   {:status  200
@@ -44,17 +53,23 @@
         :methods ["get"]
         :route "{*path}"
         :handler (fn [ctx req res]
-                   (prn [:ssr-invoked req])
-                   (->> req
-                        render-app->html
-                        html-ok
-                        res)))
+                   (go
+                     (prn [:ssr-invoked req])
+                     (let [html (<p! (render-app->html req))]
+                       (-> html
+                           html-ok
+                           res))
+                     ;(->> req
+                     ;     render-app->html
+                     ;     html-ok
+                     ;     res)
+                     )))
 
 ;; cljcloud api fn azure handler
-(defapi roles
-        :route "api/roles"
+(defapi products
+        :route "api/products"
         :handler (fn [ctx req res]
-                   (prn [:roles-invoked req])
+                   (prn [:products-api-invoked req])
                    ;; ctx and req are usual clojure maps
                    ;(cljs.pprint/pprint [:roles-invoked :ctx ctx :req req])
                    ;(prn "test")
@@ -62,11 +77,20 @@
                    ;         :bindings
                    ;         :req
                    ;         :headers))
-                   (->> [{:id 1 :name "user"}
-                         {:id 2 :name "admin"}]
-                        clj->json
-                        json-ok
-                        res)))
+                   (go
+                     (try
+                       (let [data (<p! (db/get-products))]
+                         (->> data
+                              clj->json
+                              json-ok
+                              res))
+                       (catch :default err
+                         (prn [:products-api-error err])
+                         (-> {:error true
+                              :message "Error code 1111"}
+                             clj->json
+                             json-err
+                             res))))))
 
 
 ;; shadow-cljs default azure fn handler

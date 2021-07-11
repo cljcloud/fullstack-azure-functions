@@ -1,8 +1,13 @@
 (ns fullstack-azure-functions.components
-  (:require [ajax.core :refer [GET POST]]
+  (:require ;[ajax.core :refer [GET POST]]
+            [cross-fetch :as fetch]
+            [cognitect.transit :as t]
             [reitit.core :as r]
             [reitit.frontend :as rf]
             [fullstack-azure-functions.state :as s]))
+
+(def transit-json-reader
+  (delay (t/reader :json)))
 
 (defn name->href
   "Isomorphic version of rfe/href."
@@ -10,17 +15,56 @@
   (let [match (rf/match-by-name! @s/router name)]
     (r/match->path match)))
 
+;; TODO: use isomorphic-fetch
+;; TODO: transcode transit to clj code https://github.com/lambdaisland/fetch/blob/main/src/lambdaisland/fetch.cljs
+;; TODO: add ^js in front of response to make sure that .-status and .json are not munged during :advanced optimizations.
+
 (defn get-api-data []
-  (GET "http://localhost:8021/api/users"
-       {;:headers       (->headers)
-        ;:params        params
-        :error-handler (fn [err] (prn [:get-api-data-error err]))
-        :handler       (fn [res]
-                         (prn [:get-api-data-res res])
-                         (let [details (:details res)]
-                           (prn "details" details)
-                           (swap! s/app-state assoc :api-data res)
-                           ))}))
+  (-> (fetch "http://localhost:8021/api/users")
+      (.then #(.text %))
+      (.then (fn [res]
+               (prn [:get-api-data-res res])
+               (let [details (:details res)]
+                 (prn "details" details)
+                 (swap! s/app-state assoc :api-data
+                        (-> (t/read @transit-json-reader res)
+                            (js->clj :keywordize-keys true)
+                            )
+                        )
+                 ))))
+    ;(GET "http://localhost:8021/api/users"
+    ;   {;:headers       (->headers)
+    ;    ;:params        params
+    ;    :error-handler (fn [err] (prn [:get-api-data-error err]))
+    ;    :handler       (fn [res]
+    ;                     (prn [:get-api-data-res res])
+    ;                     (let [details (:details res)]
+    ;                       (prn "details" details)
+    ;                       (swap! s/app-state assoc :api-data res)
+    ;                       ))})
+  )
+
+(defn get-products []
+  (-> (fetch "http://localhost:8021/api/products")
+      (.then #(.text %))
+      (.then (fn [res]
+               (prn [:get-api-data-res res])
+               (let [details (:details res)]
+                 (prn "details" details)
+                 (swap! s/app-state assoc :products
+                        (-> (t/read @transit-json-reader res)
+                            (js->clj :keywordize-keys true)
+                            )
+                        )
+                 ))))
+
+
+  ;(GET "http://localhost:8021/api/products"
+  ;     {:error-handler (fn [err] (prn [:get-products-error err]))
+  ;      :handler       (fn [res]
+  ;                       (prn [:get-products-res res])
+  ;                       (swap! s/app-state assoc :products res))})
+  )
 
 (defn header-nav []
   [:div.Header.px-6.color-bg-secondary
@@ -70,7 +114,13 @@
 
 (defn products-page []
   [:div.container-md.clearfix.anim-scale-in
-   [:h1.text-center.pt-6.f00-light "Products page"]])
+   [:h1.text-center.pt-6.f00-light "Products page"]
+   (let [products (:products @s/app-state)]
+     (if (seq products)
+       [:pre (with-out-str (cljs.pprint/pprint products))]
+       (do
+         (get-products)
+         [:h2 "Loading..."])))])
 
 (defn contact-page []
   [:div.container-md.clearfix.anim-scale-in

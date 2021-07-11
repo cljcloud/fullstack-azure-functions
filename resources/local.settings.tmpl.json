@@ -5,6 +5,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES": "true",
     "AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL": "true",
-    "DATABASE_URL": "{database-url}"
+    "JDBC_CONN_STR": "{jdbc-conn-str}",
+    "MSSQL_CONN_STR": "{mssql-conn-str}"
   }
 }

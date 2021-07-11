@@ -37,28 +37,34 @@
                            :azure {:target      :azure-app
                                    ;; the order of fn definition is always abc
                                    ;; important to have wildcard routes defined last
-                                   :fn-map      {:users fullstack-azure-functions.server.azure-fns/users
-                                                 :roles fullstack-azure-functions.server.azure-fns/roles
-                                                 :z-ssr fullstack-azure-functions.server.azure-fns/ssr}
+                                   :fn-map      {:users    fullstack-azure-functions.server.azure-fns/users
+                                                 :products fullstack-azure-functions.server.azure-fns/products
+                                                 :z-ssr    fullstack-azure-functions.server.azure-fns/ssr}
                                    :app-dir     "target/azure"
                                    :build-hooks [(fullstack-azure-functions.cljcloud.cljs-azure/render-settings)]
                                    :js-options  {:js-provider          :shadow
-                                                 :keep-native-requires true}}
+                                                 :keep-native-requires true
+                                                 :keep-as-require      #{"mssql"}}}
                            :test  {:target    :node-test
                                    :output-to "target/test/test.js"
                                    :autorun   true}}}
-  :npm-deps []
+  :npm-deps [[mssql "7.1.3"]
+             [cross-fetch "3.1.4"]]
+
   :npm-dev-deps [[xmlhttprequest "1.8.0"]
                  [ws "7.5.0"]
                  [source-map-support "0.5.19"]]
 
   :migratus {:store         :database
              :migration-dir "migrations"
-             :db            ~(get (System/getenv) "database-url")}
+             :db            ~(get (System/getenv) "jdbc-conn-str")}
 
-  :profiles {:prod {:env {:database-url  "production-db"
-                          :proxy-assets  "storage-url"
-                          :proxy-favicon "storage-url"}}
-             :dev  {:env {:database-url  "local-db-url"
-                          :proxy-assets  "http://localhost:8020/assets/{path}"
-                          :proxy-favicon "http://localhost:8020/favicon.ico"}}})
+  ;; real values inside local profiles.clj
+  :profiles {:prod {:env {:jdbc-conn-str  "production-db"
+                          :mssql-conn-str "mssql-conn-str"
+                          :proxy-assets   "storage-url"
+                          :proxy-favicon  "storage-url"}}
+             :dev  {:env {:jdbc-conn-str  "local-db-url"
+                          :mssql-conn-str "mssql-conn-str"
+                          :proxy-assets   "http://localhost:8020/assets/{path}"
+                          :proxy-favicon  "http://localhost:8020/favicon.ico"}}})
