@@ -4,6 +4,7 @@
             [cognitect.transit :as t]
             [reitit.core :as r]
             [reitit.frontend :as rf]
+            [cljs.pprint :as pp]
             [fullstack-azure-functions.state :as s]))
 
 (def transit-json-reader
@@ -110,14 +111,14 @@
    [:br]
    [:br]
    [:pre
-    (with-out-str (cljs.pprint/pprint (dissoc @s/app-state :route)))]])
+    (with-out-str (pp/pprint (dissoc @s/app-state :route)))]])
 
 (defn products-page []
   [:div.container-md.clearfix.anim-scale-in
    [:h1.text-center.pt-6.f00-light "Products page"]
    (let [products (:products @s/app-state)]
      (if (seq products)
-       [:pre (with-out-str (cljs.pprint/pprint products))]
+       [:pre (with-out-str (pp/pprint products))]
        (do
          (get-products)
          [:h2 "Loading..."])))])
