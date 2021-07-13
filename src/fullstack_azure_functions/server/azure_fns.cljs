@@ -95,7 +95,7 @@
 
 ;; shadow-cljs default azure fn handler
 (defn users
-  {:azure/bindings [{:authLevel "function"
+  {:azure/bindings [{:authLevel "anonymous"
                      :type      "httpTrigger"
                      :direction "in"
                      :name      "req"

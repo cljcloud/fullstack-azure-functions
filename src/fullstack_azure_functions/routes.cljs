@@ -18,9 +18,8 @@
      :view           c/products-page
      ;; fn to be called before server side rendering
      ;; used to pre-populate state as required for the current page
-     :ssr-pre-render (fn []
-                       (c/get-products)
-                       )}]
+     :ssr-pre-render (fn [base-api-url]
+                       (c/get-products base-api-url))}]
 
    ["/contact"
     {:name    :routes/contact

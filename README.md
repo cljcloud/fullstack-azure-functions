@@ -19,9 +19,31 @@ Start Azure Func (starts node process, required for REPL):
 
     $ cd target/azure && func start --cors * --port 8021    
 
-## Release
+or if restarted in the same folder after `lein clean`
+
+    $ cd .. && cd azure && func start --cors * --port 8021
+
+## Release Azure Functions
 
     $ lein with-profile prod shadow release azure app
+    $ cp -rf node_modules target/azure
+
+Publish to Azure Function
+
+    $ cd target/azure
+    $ func azure functionapp publish <FunctionAppName>
+
+Fetch remote settings
+
+    $ func azure functionapp fetch-app-settings <FunctionAppName>
+
+Upload local settings
+
+    $ func azure functionapp publish <FunctionAppName> --publish-settings-only
+
+## Release client side assets
+
+The client side assets must be uploaded to Azure storage under `/assets` folder.
 
 ## Azure Functions Bits
 

@@ -65,7 +65,7 @@
     (if-some [ssr-pre-render-fn (-> route :data :ssr-pre-render)]
       (do
         (prn "ssr-pre-render-fn exists")
-        (-> (ssr-pre-render-fn)
+        (-> (ssr-pre-render-fn (-> req :url (js/URL.) (.-origin)))
             (.then (fn []
                      (let [dehydrated-state (s/dehydrate)]
                        (rds/render-to-string [template c/app dehydrated-state]))))))
