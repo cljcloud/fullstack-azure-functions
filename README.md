@@ -1,6 +1,6 @@
 # fullstack-azure-functions
 
-Fullstack serverless app built on Azure Functions and Storage
+Fullstack serverless app built on Azure Functions with Server Side Rendering.
 
 
 ## Running locally
@@ -25,25 +25,47 @@ or if restarted in the same folder after `lein clean`
 
 ## Release Azure Functions
 
+Clean up the target
+
+    $ rm -rf target
+
+Release shadow targets with production settings injected
+
     $ lein with-profile prod shadow release azure app
+
+Copy over the node_modules, because we keep some packages from bundling,
+due to their conflicts with shadow-cljs require, (e.g. `:keep-as-require #{"mssql"}`)
+
     $ cp -rf node_modules target/azure
+
+Copy over the public folder content
+
+    $ cp -rf resources/public/** target/app
 
 Publish to Azure Function
 
-    $ cd target/azure
-    $ func azure functionapp publish <FunctionAppName>
+With uploading the local settings file, 
+if released with production profile, should contains production settings.
 
-Fetch remote settings
+    $ cd target/azure
+    $ func azure functionapp publish <FunctionAppName> --publish-local-settings
+
+Additionally:
+
+To fetch remote settings into local settings file (overwrites)
 
     $ func azure functionapp fetch-app-settings <FunctionAppName>
 
-Upload local settings
+Just upload the local settings file (without code change)
 
     $ func azure functionapp publish <FunctionAppName> --publish-settings-only
 
 ## Release client side assets
 
-The client side assets must be uploaded to Azure storage under `/assets` folder.
+(This should be done manually for now, via Azure Portal or any other way.)
+
+The client side assets (everything from `target/app/assets`) must be uploaded to Azure storage under `/assets` public container.
+
 
 ## Azure Functions Bits
 
@@ -59,7 +81,7 @@ Using proxies to re-route static files to CDN storage.
 
 DB migration scripts inside `resources/migrations` folder.
 
-Connection details should specified in local `profiles.clj` file.
+Connection details should be specified in local `profiles.clj` file.
 
 To update your current DB to the latest migration run:
 
@@ -74,23 +96,22 @@ To create a new migration:
       $ lein migratus create add-users-data
 
 
-    
-
-## Options
-
-FIXME: listing of options this app accepts.
-
 ## Examples
 
-...
+An example of the manual deployment process.
+
+      $ rm -rf target
+      $ lein with-profile prod shadow release azure app
+      $ cp -rf node_modules target/azure
+      $ cp -rf resources/public/** target/app
+      $ cd target/azure
+      $ func azure functionapp publish <FunctionAppName> --publish-local-settings
+
+
 
 ### Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+No, thanks.
 
 ## License
 

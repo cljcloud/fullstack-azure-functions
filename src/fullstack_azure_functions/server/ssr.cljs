@@ -11,6 +11,11 @@
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}
    [:head
     [:meta {:charset "UTF-8"}]
+    [:link {:rel "icon" :href "/assets/favicon.ico?v=2"}]
+    [:link {:rel "apple-touch-icon" :sizes "180x180" :href "/assets/apple-touch-icon.png"}]
+    [:link {:rel "icon" :type "image/png" :sizes "32x32" :href "/assets/favicon-32x32.png"}]
+    [:link {:rel "icon" :type "image/png" :sizes "16x16" :href "/assets/favicon-16x16.png"}]
+    [:link {:rel "manifest" :href "/assets/site.webmanifest"}]
     [:link {:href "https://unpkg.com/@primer/css/dist/primer.css" :rel "stylesheet"}]
     [:style {:type "text/css"} "body [role=button]:focus,
         body [role=tabpanel][tabindex=\"0\"]:focus,

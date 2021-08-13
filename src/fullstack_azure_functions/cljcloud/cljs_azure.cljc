@@ -27,6 +27,11 @@
 ;; (.. object -property -property method) ; object[property][property][method]()
 ;; (.. object -property -property -property) ; object[property][property][property]
 
+;; The good Macros in ClojureScript explanation
+;; https://code.thheller.com/blog/shadow-cljs/2019/10/12/clojurescript-macros.html
+;; TODO: Apply the rules from the above to here
+
+
 ;; ---=== Azure Functions ===---
 ;;
 ;; https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
