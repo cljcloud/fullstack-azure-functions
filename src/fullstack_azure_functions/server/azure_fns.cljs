@@ -1,24 +1,17 @@
 (ns fullstack-azure-functions.server.azure-fns
   (:require [environ.core :refer [env]]
             [cljs.nodejs :as nodejs]
-            [cognitect.transit :as t]
+            [fullstack-azure-functions.server.helpers :refer [clj->transit]]
             [cljs.core.async :refer-macros [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [fullstack-azure-functions.server.db :as db]
             [fullstack-azure-functions.server.ssr :refer [render-app->html]]
             [fullstack-azure-functions.cljcloud.cljs-azure :refer-macros [defapi]]))
 
-
-;; Respond with Transit JSON - consume as CLJ data struct
-(def transit-writer (t/writer :json))
-
 ;; Helpers
 
 (defn utc-now []
   (js/Date.))
-
-(defn clj->json [data]
-  (t/write transit-writer data))
 
 (defn json-err [json]
   {:status  500
@@ -81,14 +74,14 @@
                      (try
                        (let [data (<p! (db/get-products))]
                          (->> data
-                              clj->json
+                              clj->transit
                               json-ok
                               res))
                        (catch :default err
                          (prn [:products-api-error err])
                          (-> {:error true
                               :message "Error code 1111"}
-                             clj->json
+                             clj->transit
                              json-err
                              res))))))
 
@@ -117,7 +110,7 @@
                           :type  :user
                           :roles #{:admin :user}}}]
     (->> result
-         (t/write transit-writer)
+         clj->transit
          json-ok
          clj->js
          (set! (.-res ctx)))

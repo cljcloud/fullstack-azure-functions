@@ -5,7 +5,8 @@
             [cljs.core.async :refer-macros [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [fullstack-azure-functions.state :as s]
-            [fullstack-azure-functions.routes :refer [init-router]]))
+            [fullstack-azure-functions.routes :refer [init-router]]
+            [fullstack-azure-functions.server.helpers :refer [clj->transit]]))
 
 (defn template [app state]
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}
@@ -25,7 +26,6 @@
             outline: none;
             box-shadow: none;
         }
-
         .pagehead-actions>li {
             float: left;
             margin: 0 10px 0 0;
@@ -40,11 +40,7 @@
     [:script {:src "/assets/js/app.js"}]
     [:script {:dangerouslySetInnerHTML
               {:__html (str "fullstack_azure_functions.core.hydrate("
-                            (->> state
-                                 clj->js
-                                 (.stringify js/JSON))
-                            ");"
-                            )}}]
+                            "'" (clj->transit state) "');")}}]
     ]])
 
 

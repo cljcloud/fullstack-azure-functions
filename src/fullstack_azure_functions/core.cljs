@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [reagent.dom :as rdom]
             [react-dom :as react-dom]
+            [cognitect.transit :as t]
             [fullstack-azure-functions.components :as c]
             [fullstack-azure-functions.state :as s]
             [fullstack-azure-functions.routes :as routes]))
@@ -19,11 +20,10 @@
   "Hydrate is called only once on page re-load.
   Called from the ssr template script and must be exported,
   to preserve it's name even in :advanced release builds."
-  [^js/Object state]
+  [^js/String state]
   (prn [:hydrate state])
-
   ;; hydrate state
-  (s/hydrate state)
+  (s/hydrate (t/read @c/transit-json-reader state))
   ;; will update state with current route, required for further hydration
   (routes/init)
   ;; state must be same as used on server upon render, otherwise throws a warning
