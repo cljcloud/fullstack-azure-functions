@@ -13,6 +13,10 @@ Start app in dev mode (runs shadowcljs watch for both front-end and api build ta
 
     $ lein shadow watch azure app
 
+or
+
+    $ lein dev
+
 nrepl automatically started on 7002 port
 
 Run 2 repl session in cursive, separate REPLs for browser and node.
@@ -36,6 +40,10 @@ Clean up the target
 Release shadow targets with production settings injected
 
     $ lein with-profile prod shadow release azure app
+
+or
+
+    $ lein release:prod
 
 Copy over the node_modules, because we keep some packages from bundling,
 due to their conflicts with shadow-cljs require, (e.g. `:keep-as-require #{"mssql"}`)

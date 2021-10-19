@@ -48,6 +48,7 @@
                            :test  {:target    :node-test
                                    :output-to "target/test/test.js"
                                    :autorun   true}}}
+
   :npm-deps [[mssql "7.1.3"]
              [cross-fetch "3.1.4"]]
 
@@ -58,6 +59,9 @@
   :migratus {:store         :database
              :migration-dir "migrations"
              :db            ~(get (System/getenv) "jdbc-conn-str")}
+
+  :aliases {"dev"          ["shadow" "watch" "azure" "app"]
+            "release:prod" ["with-profile" "prod" "shadow" "release" "azure" "app"]}
 
   ;; real values inside local profiles.clj
   :profiles {:prod {:env {:jdbc-conn-str  "production-db"
