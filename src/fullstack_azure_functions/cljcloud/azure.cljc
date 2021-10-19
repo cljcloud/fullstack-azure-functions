@@ -29,7 +29,7 @@
                  (gobject/getKeys obj)))
        obj)))
 
-(defmacro defapi
+(defmacro defhttp
   "Define new Azure Function with http trigger."
   [name & {:keys [methods route handler auth]
            :or   {methods ["get"]

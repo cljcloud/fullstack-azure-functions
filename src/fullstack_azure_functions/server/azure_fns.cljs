@@ -6,7 +6,7 @@
             [cljs.core.async.interop :refer-macros [<p!]]
             [fullstack-azure-functions.server.db :as db]
             [fullstack-azure-functions.server.ssr :refer [render-app->html]]
-            [fullstack-azure-functions.cljcloud.azure :refer-macros [defapi]]))
+            [fullstack-azure-functions.cljcloud.azure :refer-macros [defhttp]]))
 
 ;; Helpers
 
@@ -42,48 +42,48 @@
 
 ;; Functions
 
-(defapi ssr
-        :methods ["get"]
-        :route "{*path}"
-        :handler (fn [ctx req res]
-                   (go
-                     (prn [:ssr-invoked req])
-                     (let [html (<p! (render-app->html req))]
-                       (-> html
-                           html-ok
-                           res))
-                     ;(->> req
-                     ;     render-app->html
-                     ;     html-ok
-                     ;     res)
-                     )))
+(defhttp ssr
+         :methods ["get"]
+         :route "{*path}"
+         :handler (fn [ctx req res]
+                    (go
+                      (prn [:ssr-invoked req])
+                      (let [html (<p! (render-app->html req))]
+                        (-> html
+                            html-ok
+                            res))
+                      ;(->> req
+                      ;     render-app->html
+                      ;     html-ok
+                      ;     res)
+                      )))
 
 ;; cljcloud api fn azure handler
-(defapi products
-        :route "api/products"
-        :handler (fn [ctx req res]
-                   (prn [:products-api-invoked req])
-                   ;; ctx and req are usual clojure maps
-                   ;(cljs.pprint/pprint [:roles-invoked :ctx ctx :req req])
-                   ;(prn "test")
-                   ;(prn (-> ctx
-                   ;         :bindings
-                   ;         :req
-                   ;         :headers))
-                   (go
-                     (try
-                       (let [data (<p! (db/get-products))]
-                         (->> data
+(defhttp products
+         :route "api/products"
+         :handler (fn [ctx req res]
+                    (prn [:products-api-invoked req])
+                    ;; ctx and req are usual clojure maps
+                    ;(cljs.pprint/pprint [:roles-invoked :ctx ctx :req req])
+                    ;(prn "test")
+                    ;(prn (-> ctx
+                    ;         :bindings
+                    ;         :req
+                    ;         :headers))
+                    (go
+                      (try
+                        (let [data (<p! (db/get-products))]
+                          (->> data
+                               clj->transit
+                               json-ok
+                               res))
+                        (catch :default err
+                          (prn [:products-api-error err])
+                          (-> {:error   true
+                               :message "Error code 1111"}
                               clj->transit
-                              json-ok
-                              res))
-                       (catch :default err
-                         (prn [:products-api-error err])
-                         (-> {:error true
-                              :message "Error code 1111"}
-                             clj->transit
-                             json-err
-                             res))))))
+                              json-err
+                              res))))))
 
 
 ;; shadow-cljs default azure fn handler
@@ -125,12 +125,12 @@
   (env :azure-web-jobs-storage)
   (env :database-url)
 
-  (macroexpand '(defapi ssr
-                        :methods ["get"]
-                        :route "{*path}"
-                        :handler (fn [ctx req res]
-                                   (prn [:ssr-invoked req])
-                                   (->> (render-app->html)
-                                        html-ok
-                                        res))))
+  (macroexpand '(defhttp ssr
+                         :methods ["get"]
+                         :route "{*path}"
+                         :handler (fn [ctx req res]
+                                    (prn [:ssr-invoked req])
+                                    (->> (render-app->html)
+                                         html-ok
+                                         res))))
   )
