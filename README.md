@@ -5,6 +5,10 @@ Fullstack serverless app built on Azure Functions with Server Side Rendering.
 
 ## Running locally
 
+Install Azure Functions Core Tools
+
+`npm i -g azure-functions-core-tools@3`
+
 Start app in dev mode (runs shadowcljs watch for both front-end and api build targets):
 
     $ lein shadow watch azure app
