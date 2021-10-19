@@ -116,12 +116,18 @@ To create a new migration:
 
 An example of the manual deployment process.
 
-      $ rm -rf target
+      $ lein clean
       $ lein with-profile prod shadow release azure app
       $ cp -rf node_modules target/azure
       $ cp -rf resources/public/** target/app
       $ cd target/azure
       $ func azure functionapp publish <FunctionAppName> --publish-local-settings
+
+or
+
+      $ lein release:prod
+      $ func azure functionapp publish <FunctionAppName> --publish-local-settings
+
 
 
 

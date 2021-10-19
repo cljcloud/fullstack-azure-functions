@@ -66,13 +66,19 @@
 
   :aliases {"watch"        ["shadow" "watch" "azure" "app"]
             "azure"        ["shell" "func" "start" "--cors" "*" "--port" "8021"]
-            "release:prod" ["with-profile" "prod" "shadow" "release" "azure" "app"]}
+            "release:prod" ["do"
+                            ["clean"]
+                            ["with-profile" "prod" "shadow" "release" "azure" "app"]
+                            ["shell" "cp" "-rf" "../../node_modules" "."]
+                            ["shell" "cp" "-rf" "../../resources/public/" "../app"]]}
 
   ;; real values inside local profiles.clj
-  :profiles {:prod {:env {:jdbc-conn-str  "production-db"
+  :profiles {;; used only if specified `with-profile prod`
+             :prod {:env {:jdbc-conn-str  "production-db"
                           :mssql-conn-str "mssql-conn-str"
                           :proxy-assets   "storage-url"
                           :proxy-favicon  "storage-url"}}
+             ;; default
              :dev  {:env {:jdbc-conn-str  "local-db-url"
                           :mssql-conn-str "mssql-conn-str"
                           :proxy-assets   "http://localhost:8020/assets/{path}"
