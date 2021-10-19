@@ -6,7 +6,7 @@
             [cljs.core.async.interop :refer-macros [<p!]]
             [fullstack-azure-functions.state :as s]
             [fullstack-azure-functions.routes :refer [init-router]]
-            [fullstack-azure-functions.server.helpers :refer [clj->transit]]))
+            [fullstack-azure-functions.helpers :refer [clj->transit]]))
 
 (defn template [app state]
   [:html {:lang "en" :data-color-mode "light" :data-dark-theme "light"}

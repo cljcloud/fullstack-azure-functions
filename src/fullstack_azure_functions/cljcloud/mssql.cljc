@@ -1,11 +1,11 @@
-(ns fullstack-azure-functions.cljcloud.cljs-mssql
+(ns fullstack-azure-functions.cljcloud.mssql
   (:require [mssql :as sql]
             [environ.core :refer [env]]
             [cljs.core.async :refer [<! chan >!] :refer-macros [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [goog.object :as gobject]))
 
-;; All is async here, returns promise, must be catched, otherwise nodejs process crash
+;; All is async here, returns promise, must be caught, otherwise nodejs process crash
 
 ;; https://gist.github.com/pesterhazy/c4bab748214d2d59883e05339ce22a0f
 ;;

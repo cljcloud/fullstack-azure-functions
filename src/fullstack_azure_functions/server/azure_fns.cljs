@@ -1,12 +1,12 @@
 (ns fullstack-azure-functions.server.azure-fns
   (:require [environ.core :refer [env]]
             [cljs.nodejs :as nodejs]
-            [fullstack-azure-functions.server.helpers :refer [clj->transit]]
+            [fullstack-azure-functions.helpers :refer [clj->transit]]
             [cljs.core.async :refer-macros [go]]
             [cljs.core.async.interop :refer-macros [<p!]]
             [fullstack-azure-functions.server.db :as db]
             [fullstack-azure-functions.server.ssr :refer [render-app->html]]
-            [fullstack-azure-functions.cljcloud.cljs-azure :refer-macros [defapi]]))
+            [fullstack-azure-functions.cljcloud.azure :refer-macros [defapi]]))
 
 ;; Helpers
 

@@ -1,4 +1,4 @@
-(ns fullstack-azure-functions.cljcloud.cljs-azure
+(ns fullstack-azure-functions.cljcloud.azure
   #?(:cljs (:require [goog :as goog]
                      [goog.object :as gobject]))
   #?(:clj (:require [clojure.java.io :as io]
@@ -6,56 +6,17 @@
                     [environ.core :refer [env]]
                     [clojure.string :as s])))
 
-;; ClojureScript rules say:
-;; -- you can only use it in what we call a macro namespace, effectively forcing you to separate your compile time and runtime code
-
-;; http://cljs.github.io/api/cljs.core/defmacro
-
-;; ---=== ClojureScript Quirks ===---
-;;
-;; Despite in (prn obj) the key printed as keyword
-;; Access (:method obj) doesn't work, must use (.-method obj)
-;;  #js {:method "GET"}
-
-;; JavaScript Interop
-;; http://www.spacjer.com/blog/2014/09/12/clojurescript-javascript-interop/
-
-;; What are the .. ?
-;; (.method object) ; Equivalent to object.method()
-;; (.-property object) ; Equivalent to object[property]
-
-;; (.. object -property -property method) ; object[property][property][method]()
-;; (.. object -property -property -property) ; object[property][property][property]
-
-;; The good Macros in ClojureScript explanation
+;; Cljs macros
 ;; https://code.thheller.com/blog/shadow-cljs/2019/10/12/clojurescript-macros.html
-;; TODO: Apply the rules from the above to here
-
-
-;; ---=== Azure Functions ===---
-;;
-;; https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
-
-;; simple defn with meta
-;(defmacro def-api [name methods route & defn-args]
-;  `(defn ~(vary-meta name assoc
-;                     :azure/bindings [{:authLevel "anonymous"
-;                                       :type      "httpTrigger"
-;                                       :direction "in"
-;                                       :name      "req"
-;                                       :methods   methods
-;                                       :route     route}
-;                                      {:type      "http"
-;                                       :direction "out"
-;                                       :name      "res"}])
-;     ~@defn-args))
-
-;; ctx has a custom type - Function c'tor - InvocationContext
-;; js->clj only converts simple js objects
+;; Here we use cljc version, see Gotcha #5: CLJC.
 
 #?(:cljs
    (defn obj->clj
-     "Recursively convert any JS object into Clojure map."
+     "Recursively convert any JS object into Clojure map.
+
+     js->clj only converts simple js objects,
+     some objects created using c'tor function (e.g. InvocationContext)
+     are not being converted to CLJ, this helper does it."
      [obj]
      (if (goog/isObject obj)
        (persistent!
@@ -68,10 +29,11 @@
                  (gobject/getKeys obj)))
        obj)))
 
-
-(defmacro defapi [name & {:keys [methods route handler auth]
-                          :or   {methods ["get"]
-                                 auth    "anonymous"}}]
+(defmacro defapi
+  "Define new Azure Function with http trigger."
+  [name & {:keys [methods route handler auth]
+           :or   {methods ["get"]
+                  auth    "anonymous"}}]
   `(defn ~(vary-meta name assoc
                      :azure/bindings [{:authLevel auth
                                        :type      "httpTrigger"
@@ -109,7 +71,7 @@
             {}))))
 
 #?(:clj
-   (defn render-settings
+   (defn build-hook
      "Renders Azure Function settings files:
        host.json, local.settings.json, proxies.json
 

@@ -1,5 +1,5 @@
 (ns fullstack-azure-functions.server.db
-  (:require [fullstack-azure-functions.cljcloud.cljs-mssql :as sql]
+  (:require [fullstack-azure-functions.cljcloud.mssql :as sql]
             [environ.core :refer [env]]))
 
 (def conn-str (env :mssql-conn-str))
