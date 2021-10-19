@@ -24,7 +24,9 @@
                  ]
   :plugins [[lein-shadow "0.4.0"]
             [lein-environ "1.2.0"]
-            [migratus-lein "0.7.3"]]
+            [migratus-lein "0.7.3"]
+            [lein-shell "0.5.0"]]
+
   ;:main ^:skip-aot fullstack-azure-functions.core
   :target-path "target/%s"
   :shadow-cljs {:nrepl    {:port 7002}
@@ -60,7 +62,10 @@
              :migration-dir "migrations"
              :db            ~(get (System/getenv) "jdbc-conn-str")}
 
-  :aliases {"dev"          ["shadow" "watch" "azure" "app"]
+  :shell {:dir "target/azure"}
+
+  :aliases {"watch"        ["shadow" "watch" "azure" "app"]
+            "azure"        ["shell" "func" "start" "--cors" "*" "--port" "8021"]
             "release:prod" ["with-profile" "prod" "shadow" "release" "azure" "app"]}
 
   ;; real values inside local profiles.clj

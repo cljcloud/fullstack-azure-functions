@@ -15,7 +15,7 @@ Start app in dev mode (runs shadowcljs watch for both front-end and api build ta
 
 or
 
-    $ lein dev
+    $ lein watch
 
 nrepl automatically started on 7002 port
 
@@ -30,6 +30,10 @@ Start Azure Func (starts node process, required for REPL):
 or if restarted in the same folder after `lein clean`
 
     $ cd .. && cd azure && func start --cors * --port 8021
+
+or
+
+    $ lein azure
 
 ## Release Azure Functions
 
