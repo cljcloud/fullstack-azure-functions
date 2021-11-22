@@ -56,7 +56,8 @@
 
   :npm-dev-deps [[xmlhttprequest "1.8.0"]
                  [ws "7.5.0"]
-                 [source-map-support "0.5.19"]]
+                 [source-map-support "0.5.19"]
+                 [encoding "0.1.13"]]
 
   :migratus {:store         :database
              :migration-dir "migrations"
