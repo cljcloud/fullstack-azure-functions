@@ -73,14 +73,15 @@
                             ["shell" "cp" "-rf" "../../node_modules" "."]
                             ["shell" "cp" "-rf" "../../resources/public/" "../app"]]}
 
-  ;; real values inside local profiles.clj
+  ;; values can be overridden inside local profiles.clj
   :profiles {;; used only if specified `with-profile prod`
-             :prod {:env {:jdbc-conn-str  "production-db"
-                          :mssql-conn-str "mssql-conn-str"
-                          :proxy-assets   "storage-url"
-                          :proxy-favicon  "storage-url"}}
+             :prod {:env {:jdbc-conn-str  ~(get (System/getenv) "JDBC_CONN_STR")
+                          :mssql-conn-str ~(get (System/getenv) "MSSQL_CONN_STR")
+                          :proxy-assets   ~(get (System/getenv) "PROXY_ASSETS")
+                          :proxy-favicon  ~(get (System/getenv) "PROXY_FAVICON")}}
              ;; default
              :dev  {:env {:jdbc-conn-str  "local-db-url"
                           :mssql-conn-str "mssql-conn-str"
                           :proxy-assets   "http://localhost:8020/assets/{path}"
-                          :proxy-favicon  "http://localhost:8020/favicon.ico"}}})
+                          :proxy-favicon  "http://localhost:8020/favicon.ico"}}}
+            )
