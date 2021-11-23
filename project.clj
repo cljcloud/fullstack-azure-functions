@@ -78,10 +78,13 @@
              :prod {:env {:jdbc-conn-str  ~(get (System/getenv) "JDBC_CONN_STR")
                           :mssql-conn-str ~(get (System/getenv) "MSSQL_CONN_STR")
                           :proxy-assets   ~(get (System/getenv) "PROXY_ASSETS")
-                          :proxy-favicon  ~(get (System/getenv) "PROXY_FAVICON")}}
+                          :azure-function-disable-local-call  "false"
+                          :azure-storage-conn-str            ~(get (System/getenv) "AZURE_STORAGE_CONN_STR")}}
              ;; default
              :dev  {:env {:jdbc-conn-str  "local-db-url"
                           :mssql-conn-str "mssql-conn-str"
                           :proxy-assets   "http://localhost:8020/assets/{path}"
-                          :proxy-favicon  "http://localhost:8020/favicon.ico"}}}
+                          ;; this is needed to allow reference to localhost in proxies.json
+                          :azure-function-disable-local-call  "true"
+                          :azure-storage-conn-str            ""}}}
             )
